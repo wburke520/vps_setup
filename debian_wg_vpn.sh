@@ -54,7 +54,7 @@ echo "[Interface]
 PrivateKey = $(cat sprivatekey)
 
 # VPN中本机的内网IP，一般默认即可，除非和你服务器或客户端设备本地网段冲突
-Address = 10.0.0.1/24 
+Address = 10.0.0.1/24, fd10:db31:203:ab31::1/64  
 
 # 运行 WireGuard 时要执行的 iptables 防火墙规则，用于打开NAT转发之类的。
 # 如果你的服务器主网卡名称不是 eth0 ，那么请修改下面防火墙规则中最后的 eth0 为你的主网卡名称。
@@ -68,7 +68,7 @@ PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j A
 ListenPort = 9999
 
 # 服务端请求域名解析 DNS
-DNS = 8.8.8.8
+DNS = 8.8.8.8, 2001:4860:4860::8888
 
 # 保持默认
 MTU = 1420
@@ -78,7 +78,7 @@ MTU = 1420
 PublicKey = $(cat cpublickey)
 
 # VPN内网IP范围，一般默认即可，除非和你服务器或客户端设备本地网段冲突
-AllowedIPs = 10.0.0.2/32" > wg0.conf
+AllowedIPs = 10.0.0.2/32, fd10:db31:203:ab31::2/64 " > wg0.conf
 
 # 生成客户端配置文件
 echo "[Interface]
@@ -86,10 +86,10 @@ echo "[Interface]
 PrivateKey = $(cat cprivatekey)
 
 # VPN内网IP范围
-Address = 10.0.0.2/24
+Address = 10.0.0.2/24,fd10:db31:203:ab31::2/64 
 
 # 解析域名用的DNS
-DNS = 8.8.8.8
+DNS = 8.8.8.8, 2001:4860:4860::8888
 
 # 保持默认
 MTU = 1300
@@ -135,6 +135,7 @@ lsmod | grep bbr
 # 打开防火墙转发功能
 echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+echo "net.ipv6.conf.all.forwarding = 1" >> /etc/sysctl.conf
 sysctl -p
 
 # 启动WireGuard
